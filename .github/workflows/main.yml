@@ -1,4 +1,4 @@
-name: iOS Build
+name: Build Android & iOS
 
 on:
   push:
@@ -9,22 +9,45 @@ on:
       - main
 
 jobs:
-- name: Setup CocoaPods
-   run: |
-        pod install || pod update
-
-  build:
-    runs-on: macos-latest
-
+  build-android:
+    name: Build Android App
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Set Up Xcode
-        run: sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
 
-      - name: Install Dependencies
-        run: brew install --formula cocoapods
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
 
-      - name: Build Project
-        run: xcodebuild -project AudioRecorderApp.xcodeproj -scheme AudioRecorderApp -sdk iphoneos -configuration Release build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+      - name: Grant execute permission for Gradle wrapper
+        run: chmod +x ./gradlew
+
+      - name: Build Android App
+        run: ./gradlew assembleRelease
+
+  build-ios:
+    name: Build iOS App
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          brew install --formula cocoapods
+          cd ios && pod install
+
+      - name: Build iOS App
+        run: |
+          cd ios
+          xcodebuild -workspace AudioRecorderApp.xcworkspace \
+            -scheme AudioRecorderApp \
+            -sdk iphoneos \
+            -configuration Release \
+            CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
