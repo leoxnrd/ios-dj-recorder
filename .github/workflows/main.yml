@@ -38,6 +38,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 'stable'
+
       - name: Ensure iOS directory and Xcode project exist
         run: |
           if [ ! -d "ios" ]; then
