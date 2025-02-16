@@ -21,7 +21,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          brew install cocoapods
+          brew install --formula cocoapods
           pod install --project-directory=.
 
       - name: Build Project
