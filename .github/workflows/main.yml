@@ -38,17 +38,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Ensure iOS directory exists
+      - name: Ensure iOS directory exists and contains Podfile
         run: |
           if [ ! -d "ios" ]; then
-            echo "iOS directory not found, creating..."
-            mkdir ios
+            echo "iOS directory not found, stopping build."
+            exit 1
+          fi
+          if [ ! -f "ios/Podfile" ]; then
+            echo "Podfile not found, stopping build."
+            exit 1
           fi
 
       - name: Install dependencies
         run: |
           brew install --formula cocoapods
-          cd ios && pod install
+          cd ios && pod install --repo-update
 
       - name: Build iOS App
         run: |
