@@ -38,18 +38,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Ensure iOS directory exists and contains Podfile
+      - name: Ensure iOS directory and Xcode project exist
         run: |
           if [ ! -d "ios" ]; then
             echo "Creating missing iOS directory."
             mkdir ios
           fi
-          if [ ! -f "ios/Podfile" ]; then
-            echo "Creating a default Podfile."
-            echo "platform :ios, '13.0'" > ios/Podfile
-            echo "target 'AudioRecorderApp' do" >> ios/Podfile
-            echo "  use_frameworks!" >> ios/Podfile
-            echo "end" >> ios/Podfile
+          if [ ! -f "ios/Runner.xcworkspace" ] && [ ! -f "ios/Runner.xcodeproj" ]; then
+            echo "iOS project not found, initializing Flutter project."
+            flutter create .
           fi
 
       - name: Install dependencies
@@ -60,8 +57,8 @@ jobs:
       - name: Build iOS App
         run: |
           cd ios
-          xcodebuild -workspace AudioRecorderApp.xcworkspace \
-            -scheme AudioRecorderApp \
+          xcodebuild -workspace Runner.xcworkspace \
+            -scheme Runner \
             -sdk iphoneos \
             -configuration Release \
             CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
