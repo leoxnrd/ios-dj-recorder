@@ -9,6 +9,10 @@ on:
       - main
 
 jobs:
+- name: Setup CocoaPods
+   run: |
+        pod install || pod update
+
   build:
     runs-on: macos-latest
 
@@ -23,4 +27,4 @@ jobs:
         run: brew install --formula cocoapods
 
       - name: Build Project
-        run: xcodebuild -workspace AudioRecorderApp.xcworkspace -scheme AudioRecorderApp -sdk iphoneos -configuration Release build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+        run: xcodebuild -project AudioRecorderApp.xcodeproj -scheme AudioRecorderApp -sdk iphoneos -configuration Release build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
