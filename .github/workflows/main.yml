@@ -40,15 +40,15 @@ jobs:
 
       - name: Install dependencies
         run: |
-          brew install cocoapods
-          if [ -d "ios" ]; then cd ios && pod install; else echo "iOS directory not found" && exit 1; fi
+          brew install --formula cocoapods
+          if [ ! -d "ios" ]; then echo "iOS directory not found" && exit 1; fi
+          cd ios && pod install
 
       - name: Build iOS App
         run: |
-          if [ -d "ios" ]; then cd ios
+          cd ios
           xcodebuild -workspace AudioRecorderApp.xcworkspace \
             -scheme AudioRecorderApp \
             -sdk iphoneos \
             -configuration Release \
-            CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO; 
-          else echo "iOS directory not found" && exit 1; fi
+            CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
